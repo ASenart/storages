@@ -131,7 +131,7 @@ class StorageClient:
             directory=False,
             storage_id=None,
             check_integrity_fn=None,
-            workers=1):
+            workers=1, edit=False):
         """Retrieves file or directory from remote_path to local_path."""
         LOGGER.info('Synchronizing %s to %s', remote_path, local_path)
         client, remote_path = self._get_storage(remote_path, storage_id=storage_id)
@@ -140,7 +140,7 @@ class StorageClient:
             local_path,
             directory=directory,
             check_integrity_fn=check_integrity_fn,
-            workers=workers)
+            workers=workers, edit=edit)
         if not os.path.exists(local_path):
             raise RuntimeError('Failed to synchronize %s' % local_path)
 

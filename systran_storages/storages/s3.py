@@ -55,7 +55,7 @@ class S3Storage(Storage):
         else:
             self._transfer_config = None
 
-    def _get_file_safe(self, remote_path, local_path):
+    def _get_file_safe(self, remote_path, local_path, edit=False):
         (local_dir, basename) = os.path.split(local_path)
         md5_path = os.path.join(local_dir, ".5dm#" + basename + "#md5")
         with tempfile.NamedTemporaryFile(delete=False) as tmpfile:

@@ -34,10 +34,10 @@ class CMStorages(Storage):
         if self.host_url is None:
             raise ValueError('http storage %s can not handle host url' % self._storage_id)
 
-    def _get_file_safe(self, remote_path, local_path):
+    def _get_file_safe(self, remote_path, local_path, edit=False):
         local_path = self._create_path_from_root(local_path)
-        self._get_main_file_safe(remote_path, local_path)
-        self._get_checksum_file_safe(remote_path, local_path)
+        self._get_main_file_safe(remote_path, local_path, edit)
+        self._get_checksum_file_safe(remote_path, local_path, edit)
 
     @staticmethod
     def _get_checksum_file(local_path):
@@ -49,15 +49,21 @@ class CMStorages(Storage):
         (local_dir, basename) = os.path.split(local_path)
         return os.path.join(local_dir, "." + basename + ".metadata")
 
-    def _get_main_file_safe(self, remote_path, local_path):
+    def _get_main_file_safe(self, remote_path, local_path, edit=False):
         corpus = self._get_corpus_info_from_remote_path(remote_path, only_success_corpus=True)
+
         params = {
             'accountId': self.account_id,
             'id': corpus.get("id"),
-            'format': "systran/sampler-corpus",
             'byChunk': "true",
             'isGzip': "true",
         }
+
+        if edit:
+            params['format'] = "systran/json-edition-corpus"
+        else:
+            params['format'] = "systran/sampler-corpus"
+
         (local_dir, basename) = os.path.split(local_path)
         metadata_filename = os.path.join(local_dir, "." + basename + ".metadata")
 
@@ -99,7 +105,7 @@ class CMStorages(Storage):
             file_checksum = str(uuid.uuid1())
         return file_checksum
 
-    def _get_checksum_file_safe(self, remote_path, local_path):
+    def _get_checksum_file_safe(self, remote_path, local_path, edit=False):
         file_checksum = self._get_checksum_from_database(remote_path)
         with open(self._get_checksum_file(local_path), "w") as file_writer:
             file_writer.write(file_checksum)

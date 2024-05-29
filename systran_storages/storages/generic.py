@@ -63,7 +63,7 @@ class Storage:
         return False
 
     @abc.abstractmethod
-    def _get_file_safe(self, remote_path, local_path):
+    def _get_file_safe(self, remote_path, local_path, edit=False):
         """Get a file from a qualified remote_path to a local_path safely
         """
         raise NotImplementedError()
@@ -74,7 +74,7 @@ class Storage:
         """
         return None
 
-    def _sync_file(self, remote_path, local_path):
+    def _sync_file(self, remote_path, local_path, edit):
         if os.path.isdir(local_path):
             local_path = os.path.join(local_path, os.path.basename(remote_path))
         else:
@@ -85,9 +85,9 @@ class Storage:
             return
         LOGGER.info('Downloading %s to %s', remote_path, local_path)
         with lock(local_path):
-            self._get_file_safe(remote_path, local_path)
+            self._get_file_safe(remote_path, local_path, edit)
 
-    def get(self, remote_path, local_path, directory=False, check_integrity_fn=None, workers=1):
+    def get(self, remote_path, local_path, directory=False, check_integrity_fn=None, workers=1, edit=False):
         """Get a file or a directory from a storage to a local file
         """
 
@@ -109,7 +109,7 @@ class Storage:
             directory = self.isdir(remote_path)
 
         if not directory:
-            self._sync_file(remote_path, local_path)
+            self._sync_file(remote_path, local_path, edit)
             return
 
         if not os.path.isdir(local_path):
@@ -163,7 +163,7 @@ class Storage:
                             checksum_file = self._get_checksum_file(path)
                             if checksum_file is not None and checksum_file in allfiles:
                                 del allfiles[checksum_file]
-                p.apply_async(self._sync_file, (internal_path, path))
+                p.apply_async(self._sync_file, (internal_path, path, edit))
             p.close()
             p.join()
             for f in allfiles:

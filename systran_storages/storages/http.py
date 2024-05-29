@@ -21,7 +21,7 @@ class HTTPStorage(Storage):
         self._pattern_push = pattern_push
         self._pattern_list = pattern_list
 
-    def _get_file_safe(self, remote_path, local_path):
+    def _get_file_safe(self, remote_path, local_path, edit=False):
         with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
             res = requests.get(self._pattern_get % remote_path)
             if res.status_code != 200:

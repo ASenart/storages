@@ -80,7 +80,7 @@ class RemoteStorage(Storage):
             self._sftp_client = ssh_client.open_sftp()
         return self._sftp_client
 
-    def _get_file_safe(self, remote_path, local_path):
+    def _get_file_safe(self, remote_path, local_path, edit=False):
         client = self._connectSCPClient()
         with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
             try:

@@ -17,7 +17,7 @@ class LocalStorage(Storage):
         super().__init__(storage_id or "local")
         self._basedir = basedir
 
-    def _get_file_safe(self, remote_path, local_path):
+    def _get_file_safe(self, remote_path, local_path, edit=False):
         with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
             LOGGER.debug('Copy remote_path %s to local_path %s via %s', remote_path, local_path,
                          tmpfile.name)

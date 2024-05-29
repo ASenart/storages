@@ -30,7 +30,7 @@ class SwiftStorage(Storage):
         self._client = SwiftService(opts)
         self._container = container_name
 
-    def _get_file_safe(self, remote_path, local_path):
+    def _get_file_safe(self, remote_path, local_path, edit=False):
         tmpdir = tempfile.mkdtemp()
         results = self._client.download(container=self._container,
                                         objects=[remote_path],
